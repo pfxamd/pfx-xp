@@ -1,30 +1,34 @@
-# Upstream migration assessment
+# PFx XP upstream migration assessment
 
-Source inspected: [webXP](https://github.com/aduncandev/web-xp), commit `bc9528db08c3714e6dfd52be43e1dcb3fe4a216a`.
+Pinned original: [webXP](https://github.com/aduncandev/web-xp), commit `bc9528db08c3714e6dfd52be43e1dcb3fe4a216a`.
 
-## What has been checked
+## Repository linkage
 
-- **Architecture:** React 18 and Vite 6, with the desktop in `src/WinXP/`.
-- **Window lifecycle:** `src/WinXP/reducer.js`, `Windows/`, and `shellBus.js`.
-- **Storage:** `src/context/vfs/` with IndexedDB persistence and a browser-memory fallback.
-- **Apps:** registry in `src/WinXP/apps/index.jsx` with executable-path mapping.
-- **Tests:** browser integration tests under `tests/` with Playwright.
+The `upstream/web-xp` Git submodule references the exact original upstream commit. GitHub stores a pointer, not a 418 MB copy, in this repository. Clone with `--recurse-submodules` to inspect/run the reference app on a local machine. Treat the submodule as read-only reference code until modules are deliberately adopted into PFx XP. Do not edit a detached submodule checkout and expect the parent repo to track those source changes.
 
-## Blockers before production use
+## Verified from upstream source
 
-1. **Rights and assets:** upstream MIT covers code, not automatically Microsoft/Nintendo artwork, sounds, games or personal media. Audit assets before public redistribution.
-2. **Accounts:** upstream `src/context/users.js` stores passwords in plaintext in browser localStorage. Its login UI is simulation-grade, not a secure authentication boundary.
-3. **Embedded browser:** upstream Internet Explorer uses iframe URLs with `allow-scripts` and `allow-same-origin`; enforce origin isolation and validated navigation before handling untrusted pages.
-4. **Persistence:** IndexedDB and localStorage provide per-browser persistence, not authenticated, cross-device or tamper-resistant storage. Ensure recoverability before changing schema.
-5. **Reproducibility:** confirm the pinned revision builds and baseline Playwright tests pass on a local Linux machine before refactoring.
-6. **Dependencies:** audit licenses and vulnerabilities of packages and optional third-party applications.
+- **Architecture:** React 18, Vite 6, desktop in `src/WinXP/`.
+- **Window manager:** `src/WinXP/reducer.js`, `Windows/`, `shellBus.js`.
+- **Virtual filesystem:** `src/context/vfs/`, with IndexedDB persistence and memory fallback.
+- **Application registry:** `src/WinXP/apps/index.jsx`.
+- **Tests:** Playwright browser integration suite in `tests/`.
 
-## Planned adoption sequence
+## Blockers to address before the customized release
 
-1. Stage the exact upstream version locally with `tools/fetch-upstream.sh` and review the source.
-2. Identify a legally redistributable, minimized set of assets and remove optional games, store, guestbook and personal material.
-3. Bring across a working, tested shell and virtual filesystem, keeping attribution intact.
-4. Isolate apps behind a stable registration API and replace simulated security where real protection is needed.
-5. Run all tests locally, with no GitHub Actions workflows.
+1. **Licensing:** upstream's MIT grant covers code but not all assets, names, fonts, Nintendo/Microsoft media or personal content. Replace or clear permissions before distributing built assets.
+2. **Account security:** upstream `src/context/users.js` stores plaintext passwords in `localStorage`, explicitly labelled simulation-grade. Do not claim secure local account separation.
+3. **Embedded pages:** the Internet Explorer clone uses iframes with `allow-scripts` and `allow-same-origin`. Untrusted pages must be isolated and the navigation message source/origin validated.
+4. **Storage reliability:** IndexedDB/localStorage are per-browser storage and cannot replace an authenticated durable filesystem. Add recovery tests and avoid accidental schema resets.
+5. **Dependencies:** review third-party application assets/licenses and audit package versions.
+6. **Baseline tests:** run the build and Playwright suite locally on Linux before refactoring. No browser test or build has been executed in this repository yet.
 
-**Status:** source review completed; source code not yet imported. This document is not a claim of a successful build or runtime test.
+## Adoption order
+
+1. Run the pinned upstream locally to establish a visual, functional and test baseline.
+2. Identify a minimal legal asset set; remove guestbook, store and unrelated games from the intended product.
+3. Port the window manager, shell, filesystem and core apps into independently maintainable PFx XP modules.
+4. Introduce a stable external-app registration API, security boundaries and independent regression tests.
+5. Verify build and visual behaviour locally, then publish PFx XP without GitHub Actions.
+
+**Current result:** pinned upstream reference and documentation, not a completed application migration.

@@ -1,29 +1,41 @@
 # PFx XP
 
-A browser-based Windows XP-inspired desktop, developed from the open-source [webXP](https://github.com/aduncandev/web-xp) project.
+A browser-based Windows XP-inspired desktop, developed from the open-source [webXP](https://github.com/aduncandev/web-xp).
 
-**Status:** preparation and source audit. The upstream application has **not** been copied into this repository yet; the repository is not currently runnable.
+## Current state
 
-## Source
+The original webXP application is pinned as a **Git submodule** at [upstream/web-xp](upstream/web-xp) (commit `bc9528db08c3714e6dfd52be43e1dcb3fe4a216a`). The upstream code and assets have not been copied into the PFx XP Git history. **PFx XP's customized application has not been built yet.**
 
-- Upstream: `aduncandev/web-xp`
-- Pinned source revision: `bc9528db08c3714e6dfd52be43e1dcb3fe4a216a` (2026-09-03)
-- Upstream's original ancestor: `ShizukuIchi/winXP`
-- Code license: MIT; see [LICENSE](LICENSE) and upstream credits.
-- Source media, game assets, brands, fonts and sounds have **separate copyright restrictions**. Do not assume they are MIT-licensed.
+### Preview the upstream application locally
 
-## Safe local source review
+```bash
+git clone --recurse-submodules https://github.com/pfxamd/pfx-xp.git
+cd pfx-xp/upstream/web-xp
+npm ci
+npm start
+```
 
-On Linux, with Git installed:
+Visit `http://localhost:3000`. This runs the **upstream webXP**, not a completed PFx XP fork. Run `npm run build` inside the same directory to check production compilation. These commands run on your computer, not in GitHub Actions.
+
+If you cloned without submodules, run `git submodule update --init --recursive` at the PFx XP repository root.
+
+### Code-only review
 
 ```bash
 bash tools/fetch-upstream.sh
 ```
 
-This fetches a pinned **code-only review copy** into the Git-ignored `.upstream/web-xp` directory. It does not modify tracked project files, publish the upstream project, or run GitHub Actions. The staged copy is **not buildable** without the omitted media assets.
+This optional script obtains a pinned sparse source review copy under the Git-ignored `.upstream/web-xp` directory without modifying the application. It deliberately excludes asset directories and is not independently runnable.
 
-For the detailed migration and security checklist, see [docs/UPSTREAM-AUDIT.md](docs/UPSTREAM-AUDIT.md).
+## Provenance and legal notes
 
-## Direction
+- Original project: [ShizukuIchi/winXP](https://github.com/ShizukuIchi/winXP).
+- Selected upstream: [aduncandev/web-xp](https://github.com/aduncandev/web-xp), commit `bc9528db08c3714e6dfd52be43e1dcb3fe4a216a`.
+- Code license: MIT, with attribution preserved in [LICENSE](LICENSE).
+- Microsoft/Nintendo artwork, third-party games and sounds, personal content, and various fonts/assets are **not automatically covered by MIT**. Audit and replace or obtain appropriate rights before distributing customized builds.
 
-Preserve the shell, window manager, virtual filesystem and core apps; remove project-specific extras; replace or properly license media; secure account storage and embedded content; and test locally before publishing any application build.
+## Development priorities
+
+Preserve the XP shell, window manager, virtual filesystem and essential programs. Remove unrelated/personal content, replace media with permitted assets, harden storage and iframe isolation, and run regression tests locally. [Upstream assessment](docs/UPSTREAM-AUDIT.md).
+
+**No GitHub Actions workflow is configured.**

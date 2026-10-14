@@ -1,0 +1,3 @@
+[submodule "upstream/web-xp"]
+	path = upstream/web-xp
+	url = https://github.com/aduncandev/web-xp.git
