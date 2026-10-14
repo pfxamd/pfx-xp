@@ -6,6 +6,7 @@ import { createHash } from 'node:crypto';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PATCHES, patchSource } from './overlay.mjs';
+import { CORE_MODULES } from './core-modules.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const UPSTREAM = join(ROOT, 'upstream', 'web-xp');
@@ -40,6 +41,9 @@ async function buildFingerprint() {
     'overrides/apps/PFxTools/index.jsx',
     'overrides/apps/PFxTools/pfx-tools.svg',
     'tests/pfx-tools.spec.js',
+    'tests/pfx-core.spec.js',
+    'tools/core-modules.mjs',
+    ...CORE_MODULES.map(([source]) => source),
   ];
   for (const path of paths) hash.update(await readFile(join(ROOT, path)));
   return hash.digest('hex');
@@ -80,10 +84,16 @@ async function prepare() {
       const original = await readFile(destination, 'utf8');
       await writeFile(destination, patchSource(path, original), 'utf8');
     }
+    // PFx-owned modules replace matching upstream paths in the generated copy.
+    for (const [source, target] of CORE_MODULES) {
+      await cp(join(ROOT, source), join(temp, target), { force: true });
+    }
     await cp(join(ROOT, 'overrides', 'apps', 'PFxTools'),
       join(temp, 'src', 'WinXP', 'apps', 'PFxTools'), { recursive: true });
     await cp(join(ROOT, 'tests', 'pfx-tools.spec.js'),
       join(temp, 'tests', 'pfx-tools.spec.js'));
+    await cp(join(ROOT, 'tests', 'pfx-core.spec.js'),
+      join(temp, 'tests', 'pfx-core.spec.js'));
 
     const pkgPath = join(temp, 'package.json');
     const pkg = JSON.parse(await readFile(pkgPath, 'utf8'));

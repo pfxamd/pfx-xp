@@ -4,7 +4,7 @@ Browser-based Windows XP-style desktop, developed from the open-source [webXP](h
 
 ## Development milestone 1
 
-The pinned upstream shell, window manager, filesystem and built-in applications are preserved in the Git submodule at `upstream/web-xp` (commit `bc9528db08c3714e6dfd52be43e1dcb3fe4a216a`). PFx XP now has a separate **disposable development workspace** with an overlay that registers its first independent application, **PFx Tools**, in the original shell and Start menu. The original submodule stays untouched.
+The upstream desktop, renderer and built-in applications are preserved in the Git submodule at `upstream/web-xp` (commit `bc9528db08c3714e6dfd52be43e1dcb3fe4a216a`). PFx XP now owns its virtual filesystem path/index helpers and shell window-event bus. It also has a separate **disposable development workspace** with an overlay that registers its first independent application, **PFx Tools**, in the original shell and Start menu. The original submodule stays untouched.
 
 This is a working *source integration*, **not yet a standalone fork**. Its build and browser tests still need to run on a machine with Node and network access. Third-party asset rights must be cleared before redistribution.
 
@@ -34,6 +34,8 @@ No GitHub Actions workflows are configured. Build output is for **local verifica
 ## Architecture
 
 - `upstream/web-xp/`: pinned reference source as a submodule (not modified)
+- `src/core/`: first-party virtual filesystem utilities, node index and window event bus
+- `tools/core-modules.mjs`: explicit mapping of PFx-owned modules into the workspace
 - `tools/prepare.mjs`: assemble an ignored workspace from the pinned source
 - `tools/overlay.mjs`: strict, fail-closed integration patches against known source anchors
 - `overrides/apps/PFxTools/`: first independent program, launched by the real window manager
