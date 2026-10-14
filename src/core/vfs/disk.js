@@ -8,7 +8,7 @@ const MAX_TEXT = 2 * 1024 * 1024;
 
 function canonical(path) {
   if (typeof path !== 'string') throw new TypeError('Invalid file path');
-  const normalized = normalizePath(path.trim());
+  const normalized = normalizePath(path.trim()).replace(/^[a-z]:/, drive => drive.toUpperCase());
   if (!/^C:\/(?:[^/]+(?:\/[^/]+)*)?$/.test(normalized) ||
       normalized.split('/').some(segment => segment === '.' || segment === '..')) {
     throw new Error('File path must stay inside the local C: drive');
