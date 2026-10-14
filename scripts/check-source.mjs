@@ -2,6 +2,7 @@
 import { spawnSync } from 'node:child_process';
 import { access } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 export const PIN = '856bb554b3667f62078010b4cee10cc2645761e1';
 export const ROOT = resolve(import.meta.dirname, '..');
@@ -21,7 +22,7 @@ export async function verifySource() {
   ]) await access(resolve(UPSTREAM, file));
   return true;
 }
-if (process.argv[1] && resolve(process.argv[1]) === resolve(new URL(import.meta.url).pathname)) {
+if (process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url))) {
   verifySource().then(() => process.stdout.write('Pinned original winXP source verified.\n')).catch(e => {
     process.stderr.write(e.message + '\n'); process.exitCode = 1;
   });

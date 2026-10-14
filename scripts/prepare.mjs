@@ -5,7 +5,7 @@ import { resolve, join, relative, sep } from 'node:path';
 import { ROOT, UPSTREAM, verifySource, PIN } from './check-source.mjs';
 
 const OUT = resolve(ROOT, '.pfx-runtime');
-const INPUTS = ['app/package.json', 'app/index.html', 'app/vite.config.mjs', 'app/src/entry.jsx', 'app/src/font.css'];
+const INPUTS = ['app/package.json', 'app/index.html', 'app/vite.config.mjs', 'app/src/entry.jsx', 'app/src/font.css', 'scripts/prepare.mjs', 'scripts/check-source.mjs'];
 async function exists(p) { try { await access(p); return true; } catch { return false; } }
 async function signature() {
   const hash = createHash('sha256'); hash.update(PIN);
@@ -42,8 +42,7 @@ async function prepare() {
     await cp(resolve(ROOT, 'app/src/entry.jsx'), join(tmp, 'src/entry.jsx'));
     await cp(resolve(ROOT, 'app/src/font.css'), join(tmp, 'src/assets/font.css'));
     await writeFile(join(tmp, '.pfx-signature'), fingerprint + '\n');
-    // A previous installed node_modules directory is deliberately preserved
-    // only if the manifest has not changed. Otherwise npm run setup is required.
+    // The preview is disposable; after modifying the input config, run npm run setup again.
     await rm(OUT, { recursive: true, force: true });
     await rename(tmp, OUT);
     process.stdout.write('Original winXP assembled with PFx modern entry in .pfx-runtime.\n');
