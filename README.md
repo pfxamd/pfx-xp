@@ -18,7 +18,7 @@ cd pfx-xp
 npm run test:unit
 npm run setup
 npm run test:unit
-npm run test:browser
+npm run verify:local
 npm run dev
 ```
 
@@ -41,3 +41,5 @@ The original code is MIT licensed; attribution remains in `LICENSE` and the orig
 ### Validation
 
 Unit tests cover window behavior, file persistence, rollback and integration contracts. Browser smoke tests exercise the classic desktop and a save/reload/open workflow in both Chromium and Firefox; install browsers locally with `cd .pfx-runtime && npx playwright install chromium firefox`. These automated browser checks and the production build must run successfully before promoting the migration branch to `main`.
+
+The local verification command checks first-party unit tests, source imports, package installation, production compilation and Chromium/Firefox browser flows. It does not run GitHub Actions.

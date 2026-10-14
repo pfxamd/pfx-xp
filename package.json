@@ -16,6 +16,6 @@
     "check:source": "node scripts/check-source.mjs",
     "test:browser": "node scripts/prepare.mjs && npm run test:browser --prefix .pfx-runtime",
     "check:integration": "node scripts/check-integration.mjs",
-    "verify:local": "npm run test:unit && npm run check:integration && npm run setup && npm run build:local && npx --prefix .pfx-runtime playwright install chromium firefox && npm run test:browser"
+    "verify:local": "npm run test:unit && npm run check:integration && npm run setup && npm run build:local && npm exec --prefix .pfx-runtime -- playwright install chromium firefox && npm run test:browser"
   }
 }
