@@ -1,6 +1,8 @@
 node_modules/
 dist/
 .upstream/
+.pfx-workspace/
+.pfx-workspace.tmp-*/
 .env
 .env.*
 !.env.example

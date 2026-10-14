@@ -1,41 +1,45 @@
 # PFx XP
 
-A browser-based Windows XP-inspired desktop, developed from the open-source [webXP](https://github.com/aduncandev/web-xp).
+Browser-based Windows XP-style desktop, developed from the open-source [webXP](https://github.com/aduncandev/web-xp) project.
 
-## Current state
+## Development milestone 1
 
-The original webXP application is pinned as a **Git submodule** at [upstream/web-xp](upstream/web-xp) (commit `bc9528db08c3714e6dfd52be43e1dcb3fe4a216a`). The upstream code and assets have not been copied into the PFx XP Git history. **PFx XP's customized application has not been built yet.**
+The pinned upstream shell, window manager, filesystem and built-in applications are preserved in the Git submodule at `upstream/web-xp` (commit `bc9528db08c3714e6dfd52be43e1dcb3fe4a216a`). PFx XP now has a separate **disposable development workspace** with an overlay that registers its first independent application, **PFx Tools**, in the original shell and Start menu. The original submodule stays untouched.
 
-### Preview the upstream application locally
+This is a working *source integration*, **not yet a standalone fork**. Its build and browser tests still need to run on a machine with Node and network access. Third-party asset rights must be cleared before redistribution.
+
+## Run locally (Node 22+)
 
 ```bash
 git clone --recurse-submodules https://github.com/pfxamd/pfx-xp.git
-cd pfx-xp/upstream/web-xp
-npm ci
-npm start
+cd pfx-xp
+npm run setup
+npm run dev
 ```
 
-Visit `http://localhost:3000`. This runs the **upstream webXP**, not a completed PFx XP fork. Run `npm run build` inside the same directory to check production compilation. These commands run on your computer, not in GitHub Actions.
+Open `http://localhost:3000`. Once signed in, open **PFx Tools** from Start > All Programs, or use Run with `pfx-tools`. Existing local profiles may require the Run command to see the newly added shortcut.
 
-If you cloned without submodules, run `git submodule update --init --recursive` at the PFx XP repository root.
-
-### Code-only review
+## Checks (local only)
 
 ```bash
-bash tools/fetch-upstream.sh
+npm run test:unit
+cd upstream/web-xp && npx playwright install chromium && cd ../..
+npm run test:smoke
+npm run test:xp
+npm run build:local
 ```
 
-This optional script obtains a pinned sparse source review copy under the Git-ignored `.upstream/web-xp` directory without modifying the application. It deliberately excludes asset directories and is not independently runnable.
+No GitHub Actions workflows are configured. Build output is for **local verification only**; do not redistribute bundled media before a rights review.
 
-## Provenance and legal notes
+## Architecture
 
-- Original project: [ShizukuIchi/winXP](https://github.com/ShizukuIchi/winXP).
-- Selected upstream: [aduncandev/web-xp](https://github.com/aduncandev/web-xp), commit `bc9528db08c3714e6dfd52be43e1dcb3fe4a216a`.
-- Code license: MIT, with attribution preserved in [LICENSE](LICENSE).
-- Microsoft/Nintendo artwork, third-party games and sounds, personal content, and various fonts/assets are **not automatically covered by MIT**. Audit and replace or obtain appropriate rights before distributing customized builds.
+- `upstream/web-xp/`: pinned reference source as a submodule (not modified)
+- `tools/prepare.mjs`: assemble an ignored workspace from the pinned source
+- `tools/overlay.mjs`: strict, fail-closed integration patches against known source anchors
+- `overrides/apps/PFxTools/`: first independent program, launched by the real window manager
+- `tests/`: integration and overlay tests
+- `.pfx-workspace/`: generated and ignored; do not edit files here
 
-## Development priorities
+## Security and attribution
 
-Preserve the XP shell, window manager, virtual filesystem and essential programs. Remove unrelated/personal content, replace media with permitted assets, harden storage and iframe isolation, and run regression tests locally. [Upstream assessment](docs/UPSTREAM-AUDIT.md).
-
-**No GitHub Actions workflow is configured.**
+The original code is MIT-licensed; [LICENSE](LICENSE) preserves the upstream copyright. The upstream assets (including Microsoft/Nintendo media, sounds and other third-party materials) are not automatically MIT-licensed. The original local account passwords are simulation-grade, not a security boundary. See [migration audit](docs/UPSTREAM-AUDIT.md).

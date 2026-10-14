@@ -1,34 +1,22 @@
-# PFx XP upstream migration assessment
+# PFx XP migration audit
 
-Pinned original: [webXP](https://github.com/aduncandev/web-xp), commit `bc9528db08c3714e6dfd52be43e1dcb3fe4a216a`.
+Original: [aduncandev/web-xp](https://github.com/aduncandev/web-xp) at `bc9528db08c3714e6dfd52be43e1dcb3fe4a216a`.
 
-## Repository linkage
+## Implemented
 
-The `upstream/web-xp` Git submodule references the exact original upstream commit. GitHub stores a pointer, not a 418 MB copy, in this repository. Clone with `--recurse-submodules` to inspect/run the reference app on a local machine. Treat the submodule as read-only reference code until modules are deliberately adopted into PFx XP. Do not edit a detached submodule checkout and expect the parent repo to track those source changes.
+- Source pinned through a Git submodule; untouched by the overlay process.
+- Local workspace builder with SHA verification and fail-closed source anchors.
+- PFx Tools app integrated with the original program registry, virtual executable file, icon registry and Start menu.
+- Unit and Playwright integration tests included. They have not yet been run against a full local checkout in this session.
+- No GitHub Actions used.
 
-## Verified from upstream source
+## Work remaining
 
-- **Architecture:** React 18, Vite 6, desktop in `src/WinXP/`.
-- **Window manager:** `src/WinXP/reducer.js`, `Windows/`, `shellBus.js`.
-- **Virtual filesystem:** `src/context/vfs/`, with IndexedDB persistence and memory fallback.
-- **Application registry:** `src/WinXP/apps/index.jsx`.
-- **Tests:** Playwright browser integration suite in `tests/`.
+1. Run the application and all tests locally; visually inspect desktop and PFx Tools.
+2. Separate shell and core apps from unrelated optional games and personal content without breaking imports.
+3. License-audit and replace media before any public redistribution.
+4. Improve the privacy/security model; current upstream password strings in `localStorage` are not secure account authentication.
+5. Review iframe sandbox rules; avoid a sandbox combining `allow-scripts` and `allow-same-origin` for same-origin untrusted pages.
+6. Migrate core modules into independently maintained PFx XP source, then remove runtime dependency on the upstream submodule.
 
-## Blockers to address before the customized release
-
-1. **Licensing:** upstream's MIT grant covers code but not all assets, names, fonts, Nintendo/Microsoft media or personal content. Replace or clear permissions before distributing built assets.
-2. **Account security:** upstream `src/context/users.js` stores plaintext passwords in `localStorage`, explicitly labelled simulation-grade. Do not claim secure local account separation.
-3. **Embedded pages:** the Internet Explorer clone uses iframes with `allow-scripts` and `allow-same-origin`. Untrusted pages must be isolated and the navigation message source/origin validated.
-4. **Storage reliability:** IndexedDB/localStorage are per-browser storage and cannot replace an authenticated durable filesystem. Add recovery tests and avoid accidental schema resets.
-5. **Dependencies:** review third-party application assets/licenses and audit package versions.
-6. **Baseline tests:** run the build and Playwright suite locally on Linux before refactoring. No browser test or build has been executed in this repository yet.
-
-## Adoption order
-
-1. Run the pinned upstream locally to establish a visual, functional and test baseline.
-2. Identify a minimal legal asset set; remove guestbook, store and unrelated games from the intended product.
-3. Port the window manager, shell, filesystem and core apps into independently maintainable PFx XP modules.
-4. Introduce a stable external-app registration API, security boundaries and independent regression tests.
-5. Verify build and visual behaviour locally, then publish PFx XP without GitHub Actions.
-
-**Current result:** pinned upstream reference and documentation, not a completed application migration.
+The current overlay is a development integration rather than an independently deployable application.
