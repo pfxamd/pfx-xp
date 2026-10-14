@@ -31,3 +31,7 @@ No GitHub Actions are configured or required by this branch. No claim of a succe
 ### Acceptance status
 
 Pure-unit behavior has been checked; full production build, persistent browser smoke tests and visual parity have not been verified. Keep the production `main` branch unchanged until those checks succeed.
+
+## Offline-first local validation
+
+Run `npm run verify:local` on Node 22+. This executes all first-party unit tests and source import checks, assembles the pinned original, builds it, installs the Playwright browser engines if missing, and tests Chromium/Firefox. No CI or GitHub Actions minutes. The migration must not be merged into `main` unless the build and both browser tests pass.
