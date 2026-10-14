@@ -8,9 +8,9 @@
   },
   "scripts": {
     "prepare:xp": "node tools/prepare.mjs",
-    "dev": "npm run prepare:xp && vite --config .pfx-workspace/vite.config.mjs --root .pfx-workspace",
-    "build:local": "npm run prepare:xp && vite build --config .pfx-workspace/vite.config.mjs --root .pfx-workspace",
-    "preview": "vite preview --config .pfx-workspace/vite.config.mjs --root .pfx-workspace",
+    "dev": "npm run prepare:xp && vite .pfx-workspace --config .pfx-workspace/vite.config.mjs",
+    "build:local": "npm run prepare:xp && vite build .pfx-workspace --config .pfx-workspace/vite.config.mjs",
+    "preview": "vite preview .pfx-workspace --config .pfx-workspace/vite.config.mjs",
     "test:unit": "node --test tests/unit/*.test.mjs"
   },
   "dependencies": {
