@@ -3,9 +3,10 @@ import { access, cp, mkdir, readFile, rm, rename, writeFile } from 'node:fs/prom
 import { createHash } from 'node:crypto';
 import { resolve, join, relative, sep } from 'node:path';
 import { ROOT, UPSTREAM, verifySource, PIN } from './check-source.mjs';
+import { REPLACEMENTS, patchOriginalFile } from './patch-apps.mjs';
 
 const OUT = resolve(ROOT, '.pfx-runtime');
-const INPUTS = ['app/package.json', 'app/index.html', 'app/vite.config.mjs', 'app/src/entry.jsx', 'app/src/font.css', 'scripts/prepare.mjs', 'scripts/check-source.mjs', 'src/core/window/classicReducer.js', 'src/core/window/actions.js', 'src/core/window/constants.js'];
+const INPUTS = ['app/package.json', 'app/index.html', 'app/vite.config.mjs', 'app/src/entry.jsx', 'app/src/font.css', 'scripts/prepare.mjs', 'scripts/check-source.mjs', 'src/core/window/classicReducer.js', 'src/core/window/actions.js', 'src/core/window/constants.js', 'src/core/vfsUtils.js', 'src/core/vfs/nodeStore.js', 'src/core/vfs/disk.js', 'src/core/vfs/browserDisk.js', 'scripts/patch-apps.mjs'];
 async function exists(p) { try { await access(p); return true; } catch { return false; } }
 async function signature() {
   const hash = createHash('sha256'); hash.update(PIN);
@@ -51,6 +52,11 @@ async function prepare() {
     const importLine = "import { createClassicWindowState } from '../core/window/classicReducer.js';\n";
     const setupLine = 'const { initState, reducer } = createClassicWindowState({ defaultAppState, defaultIconState, FOCUSING, POWER_STATE });\n';
     await writeFile(shellPath, importLine + text.slice(0, begin) + setupLine + text.slice(finish));
+    for (const file of Object.keys(REPLACEMENTS)) {
+      const target = join(tmp, file);
+      const original = await readFile(target, 'utf8');
+      await writeFile(target, patchOriginalFile(file, original));
+    }
     await writeFile(join(tmp, '.pfx-signature'), fingerprint + '\n');
     // The preview is disposable; after modifying the input config, run npm run setup again.
     await rm(OUT, { recursive: true, force: true });
