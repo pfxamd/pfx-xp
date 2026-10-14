@@ -42,6 +42,7 @@ async function buildFingerprint() {
     'overrides/apps/PFxTools/pfx-tools.svg',
     'tests/pfx-tools.spec.js',
     'tests/pfx-core.spec.js',
+    'tests/pfx-window.spec.js',
     'tools/core-modules.mjs',
     ...CORE_MODULES.map(([source]) => source),
   ];
@@ -94,6 +95,8 @@ async function prepare() {
       join(temp, 'tests', 'pfx-tools.spec.js'));
     await cp(join(ROOT, 'tests', 'pfx-core.spec.js'),
       join(temp, 'tests', 'pfx-core.spec.js'));
+    await cp(join(ROOT, 'tests', 'pfx-window.spec.js'),
+      join(temp, 'tests', 'pfx-window.spec.js'));
 
     const pkgPath = join(temp, 'package.json');
     const pkg = JSON.parse(await readFile(pkgPath, 'utf8'));
