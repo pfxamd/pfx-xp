@@ -1,3 +1,4 @@
+import { ADD_APP, DEL_APP, FOCUS_APP, MINIMIZE_APP, TOGGLE_MAXIMIZE_APP, FOCUS_ICON, SELECT_ICONS, FOCUS_DESKTOP, START_SELECT, END_SELECT, POWER_OFF, CANCEL_POWER_OFF } from './actions.js';
 // Exact legacy XP reducer, isolated from React/DOM and injected with shell state.
 // ShizukuIchi/winXP (MIT), see LICENSE.
 export function createClassicWindowState({ defaultAppState, defaultIconState, FOCUSING, POWER_STATE }) {
