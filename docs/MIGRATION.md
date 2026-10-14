@@ -18,3 +18,16 @@ The original ShizukuIchi/winXP is the new candidate foundation. This is a separa
 - The original uses JSX in .js sources and requires targeted transformation in the Vite configuration.
 
 No GitHub Actions are configured or required by this branch. No claim of a successful browser smoke test until it is actually run.
+
+## Implemented integration
+
+- Original window reducer extracted into first-party `src/core/window/classicReducer.js` and loaded into the classic shell.
+- IndexedDB-backed virtual disk (`src/core/vfs/disk.js`, `browserDisk.js`), with explicit persistence and rollback tests.
+- Original Notepad: New, Open, Save, Save As and Ctrl+S against the real virtual disk.
+- Original My Computer: live My Documents file listing; click a document to open it in a new Notepad window.
+- Window renderer now mounts program components with JSX rather than calling them as functions, isolating their React hooks.
+- Added local browser smoke coverage for Chromium and Firefox, without GitHub Actions.
+
+### Acceptance status
+
+Pure-unit behavior has been checked; full production build, persistent browser smoke tests and visual parity have not been verified. Keep the production `main` branch unchanged until those checks succeed.

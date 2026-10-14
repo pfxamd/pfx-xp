@@ -17,6 +17,8 @@ git clone --branch migration/original-winxp --recurse-submodules https://github.
 cd pfx-xp
 npm run test:unit
 npm run setup
+npm run test:unit
+npm run test:browser
 npm run dev
 ```
 
@@ -30,8 +32,12 @@ Open `http://localhost:3000`. The `setup` command installs packages **locally** 
 - `src/core/`: independently owned modules from the prior PFx XP work; preserved for deliberate integration into the new shell
 - `tests/unit/`: regression tests for those owned core modules
 
-The original desktop currently has six core applications; it has no durable virtual filesystem. The independently owned filesystem utilities are **not yet wired into the original desktop**. Preserve the original UX first and integrate the new core incrementally.
+The original shell uses our owned classic window reducer. Notepad can save and open UTF-8 text files in an IndexedDB-backed virtual C: drive, and My Computer lists saved documents. The modern window and file-index modules remain available for further integration.
 
 ### Licensing
 
 The original code is MIT licensed; attribution remains in `LICENSE` and the original submodule. Microsoft artwork and trademarks, and third-party assets, need independent rights review before redistribution. The local preview should not be described as a Windows OS emulator or a finished production release.
+
+### Validation
+
+Unit tests cover window behavior, file persistence, rollback and integration contracts. Browser smoke tests exercise the classic desktop and a save/reload/open workflow in both Chromium and Firefox; install browsers locally with `cd .pfx-runtime && npx playwright install chromium firefox`. These automated browser checks and the production build must run successfully before promoting the migration branch to `main`.

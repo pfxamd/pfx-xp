@@ -13,6 +13,7 @@
     "build:local": "node scripts/prepare.mjs && npm run build --prefix .pfx-runtime",
     "preview": "node scripts/prepare.mjs && npm run preview --prefix .pfx-runtime",
     "test:unit": "node --test tests/unit/*.test.mjs",
-    "check:source": "node scripts/check-source.mjs"
+    "check:source": "node scripts/check-source.mjs",
+    "test:browser": "node scripts/prepare.mjs && npm run test:browser --prefix .pfx-runtime"
   }
 }

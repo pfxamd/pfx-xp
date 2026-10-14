@@ -6,7 +6,7 @@ import { ROOT, UPSTREAM, verifySource, PIN } from './check-source.mjs';
 import { REPLACEMENTS, patchOriginalFile } from './patch-apps.mjs';
 
 const OUT = resolve(ROOT, '.pfx-runtime');
-const INPUTS = ['app/package.json', 'app/index.html', 'app/vite.config.mjs', 'app/src/entry.jsx', 'app/src/font.css', 'scripts/prepare.mjs', 'scripts/check-source.mjs', 'src/core/window/classicReducer.js', 'src/core/window/actions.js', 'src/core/window/constants.js', 'src/core/vfsUtils.js', 'src/core/vfs/nodeStore.js', 'src/core/vfs/disk.js', 'src/core/vfs/browserDisk.js', 'scripts/patch-apps.mjs'];
+const INPUTS = ['app/package.json', 'app/index.html', 'app/vite.config.mjs', 'app/src/entry.jsx', 'app/src/font.css', 'scripts/prepare.mjs', 'scripts/check-source.mjs', 'src/core/window/classicReducer.js', 'src/core/window/actions.js', 'src/core/window/constants.js', 'src/core/vfsUtils.js', 'src/core/vfs/nodeStore.js', 'src/core/vfs/disk.js', 'src/core/vfs/browserDisk.js', 'scripts/patch-apps.mjs', 'app/playwright.config.mjs', 'tests/browser/smoke.spec.js'];
 async function exists(p) { try { await access(p); return true; } catch { return false; } }
 async function signature() {
   const hash = createHash('sha256'); hash.update(PIN);
@@ -43,6 +43,9 @@ async function prepare() {
     await cp(resolve(ROOT, 'app/src/entry.jsx'), join(tmp, 'src/entry.jsx'));
     await cp(resolve(ROOT, 'app/src/font.css'), join(tmp, 'src/assets/font.css'));
     await cp(resolve(ROOT, 'src/core'), join(tmp, 'src/core'), { recursive: true });
+    await mkdir(join(tmp, 'tests/browser'), { recursive: true });
+    await cp(resolve(ROOT, 'app/playwright.config.mjs'), join(tmp, 'playwright.config.mjs'));
+    await cp(resolve(ROOT, 'tests/browser/smoke.spec.js'), join(tmp, 'tests/browser/smoke.spec.js'));
     const shellPath = join(tmp, 'src/WinXP/index.js');
     const text = await readFile(shellPath, 'utf8');
     const begin = text.indexOf('const initState = {');
@@ -59,6 +62,13 @@ async function prepare() {
     }
     await writeFile(join(tmp, '.pfx-signature'), fingerprint + '\n');
     // The preview is disposable; after modifying the input config, run npm run setup again.
+    // Preserve installed packages when the manifest is unchanged.
+    const oldPackage = join(OUT, 'package.json');
+    const oldModules = join(OUT, 'node_modules');
+    if (await exists(oldPackage) && await exists(oldModules) &&
+        await readFile(oldPackage, 'utf8') === await readFile(join(tmp, 'package.json'), 'utf8')) {
+      await rename(oldModules, join(tmp, 'node_modules'));
+    }
     await rm(OUT, { recursive: true, force: true });
     await rename(tmp, OUT);
     process.stdout.write('Original winXP assembled with PFx modern entry in .pfx-runtime.\n');
