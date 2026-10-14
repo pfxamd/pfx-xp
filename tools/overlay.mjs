@@ -11,8 +11,8 @@ export const PATCHES = Object.freeze({
       find: '  // ---- C:/Program Files — one real folder per installed program ----\n',
       replace:
         '  // ---- C:/Program Files — one real folder per installed program ----\n' +
-        '  add(makeFolder(' + String.fromCharCode(96) + '\${PROGRAM_FILES}/PFx' + String.fromCharCode(96) + ', { system: true }));\n' +
-        '  add(makeFolder(' + String.fromCharCode(96) + '\${PROGRAM_FILES}/PFx/Tools' + String.fromCharCode(96) + ', { system: true }));\n' +
+        '  add(makeFolder(' + String.fromCharCode(96) + '${PROGRAM_FILES}/PFx' + String.fromCharCode(96) + ', { system: true }));\n' +
+        '  add(makeFolder(' + String.fromCharCode(96) + '${PROGRAM_FILES}/PFx/Tools' + String.fromCharCode(96) + ', { system: true }));\n' +
         "  add(makeExe(EXE_PATHS.PFX_TOOLS, 65536, { iconKey: 'pfx-tools' }));\n",
     },
     {

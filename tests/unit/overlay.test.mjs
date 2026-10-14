@@ -12,6 +12,13 @@ test('all overlay rules have unique anchors and patch correctly', () => {
   }
 });
 
+test('generated virtual folders use Program Files interpolation', () => {
+  const rules = PATCHES['src/context/vfsDefaults.js'];
+  const changes = patchSource('src/context/vfsDefaults.js', rules.map(rule => rule.find).join('\n\n'));
+  assert.ok(changes.includes('`${PROGRAM_FILES}/PFx`'));
+  assert.ok(changes.includes('`${PROGRAM_FILES}/PFx/Tools`'));
+});
+
 test('overlay rejects missing or repeated anchors', () => {
   assert.throws(() => applyRules('none', [{ find: 'one', replace: 'two' }]), /found 0/);
   assert.throws(() => applyRules('one one', [{ find: 'one', replace: 'two' }]), /found 2/);
