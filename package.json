@@ -4,25 +4,15 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=22"
+    "node": ">=22.0.0"
   },
   "scripts": {
-    "prepare:xp": "node tools/prepare.mjs",
-    "dev": "npm run prepare:xp && vite .pfx-workspace --config .pfx-workspace/vite.config.mjs",
-    "build:local": "npm run prepare:xp && vite build .pfx-workspace --config .pfx-workspace/vite.config.mjs",
-    "preview": "vite preview .pfx-workspace --config .pfx-workspace/vite.config.mjs",
-    "test:unit": "node --test tests/unit/*.test.mjs"
-  },
-  "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-use": "^17.6.0",
-    "styled-components": "^5.3.11",
-    "webamp": "^2.3.1",
-    "lodash.samplesize": "^4.2.0"
-  },
-  "devDependencies": {
-    "vite": "^6.2.0",
-    "@vitejs/plugin-react": "^4.3.4"
+    "prepare:xp": "node scripts/prepare.mjs",
+    "setup": "node scripts/prepare.mjs && npm install --prefix .pfx-runtime",
+    "dev": "node scripts/prepare.mjs && npm run dev --prefix .pfx-runtime",
+    "build:local": "node scripts/prepare.mjs && npm run build --prefix .pfx-runtime",
+    "preview": "node scripts/prepare.mjs && npm run preview --prefix .pfx-runtime",
+    "test:unit": "node --test tests/unit/*.test.mjs",
+    "check:source": "node scripts/check-source.mjs"
   }
 }

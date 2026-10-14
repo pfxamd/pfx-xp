@@ -1,0 +1,7 @@
+/* Local styling without externally hosted fonts. */
+body {
+  font-family: Tahoma, Arial, sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+*, *::before, *::after { font-family: inherit; }

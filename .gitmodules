@@ -1,3 +1,3 @@
-[submodule "upstream/original-winxp"]
-	path = upstream/original-winxp
+[submodule "upstream/winxp-original"]
+	path = upstream/winxp-original
 	url = https://github.com/ShizukuIchi/winXP.git

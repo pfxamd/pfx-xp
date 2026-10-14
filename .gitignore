@@ -1,8 +1,11 @@
 node_modules/
-.pfx-workspace/
-.pfx-workspace.tmp-*/
+.pfx-runtime/
+.pfx-runtime.tmp-*/
+.upstream/
 dist/
+test-results/
 coverage/
-.env*
-!.env.example
 .DS_Store
+.env
+.env.*
+!.env.example
