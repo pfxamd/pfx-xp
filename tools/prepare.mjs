@@ -2,6 +2,7 @@
 import { cp, mkdir, readFile, rename, rm, writeFile, access } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import { constants } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PATCHES, patchSource } from './overlay.mjs';
@@ -30,11 +31,36 @@ function pinnedRevision() {
   }
 }
 
+async function buildFingerprint() {
+  const hash = createHash('sha256');
+  hash.update(REVISION);
+  const paths = [
+    'tools/overlay.mjs',
+    'tools/prepare.mjs',
+    'overrides/apps/PFxTools/index.jsx',
+    'overrides/apps/PFxTools/pfx-tools.svg',
+    'tests/pfx-tools.spec.js',
+  ];
+  for (const path of paths) hash.update(await readFile(join(ROOT, path)));
+  return hash.digest('hex');
+}
+
 async function prepare() {
   if (!(await readable(join(UPSTREAM, 'package.json')))) {
     throw new Error('Upstream checkout is missing. Run: git submodule update --init --recursive');
   }
   pinnedRevision();
+  const signature = await buildFingerprint();
+  const previousKey = join(WORKSPACE, '.pfx-source-signature');
+  if (await readable(previousKey)) {
+    const same = (await readFile(previousKey, 'utf8')).trim() === signature;
+    const modulesAvailable = await readable(join(UPSTREAM, 'node_modules'));
+    const workspaceModules = await readable(join(WORKSPACE, 'node_modules'));
+    if (same && (!modulesAvailable || workspaceModules)) {
+      process.stdout.write('PFx XP workspace is already current.\n');
+      return;
+    }
+  }
   const temp = join(ROOT, '.pfx-workspace.tmp-' + process.pid);
   await rm(temp, { recursive: true, force: true });
   await mkdir(temp, { recursive: true });
@@ -71,6 +97,7 @@ async function prepare() {
       const { symlink } = await import('node:fs/promises');
       await symlink(modules, join(temp, 'node_modules'), 'dir');
     }
+    await writeFile(join(temp, '.pfx-source-signature'), signature + '\n', 'utf8');
     await rm(WORKSPACE, { recursive: true, force: true });
     await rename(temp, WORKSPACE);
     process.stdout.write('PFx XP workspace ready. Upstream files were not modified.\n');
