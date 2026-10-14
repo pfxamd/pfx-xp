@@ -5,7 +5,7 @@ import { resolve, join, relative, sep } from 'node:path';
 import { ROOT, UPSTREAM, verifySource, PIN } from './check-source.mjs';
 
 const OUT = resolve(ROOT, '.pfx-runtime');
-const INPUTS = ['app/package.json', 'app/index.html', 'app/vite.config.mjs', 'app/src/entry.jsx', 'app/src/font.css', 'scripts/prepare.mjs', 'scripts/check-source.mjs'];
+const INPUTS = ['app/package.json', 'app/index.html', 'app/vite.config.mjs', 'app/src/entry.jsx', 'app/src/font.css', 'scripts/prepare.mjs', 'scripts/check-source.mjs', 'src/core/window/classicReducer.js', 'src/core/window/actions.js', 'src/core/window/constants.js'];
 async function exists(p) { try { await access(p); return true; } catch { return false; } }
 async function signature() {
   const hash = createHash('sha256'); hash.update(PIN);
@@ -41,6 +41,16 @@ async function prepare() {
     await cp(resolve(ROOT, 'app/vite.config.mjs'), join(tmp, 'vite.config.mjs'));
     await cp(resolve(ROOT, 'app/src/entry.jsx'), join(tmp, 'src/entry.jsx'));
     await cp(resolve(ROOT, 'app/src/font.css'), join(tmp, 'src/assets/font.css'));
+    await cp(resolve(ROOT, 'src/core'), join(tmp, 'src/core'), { recursive: true });
+    const shellPath = join(tmp, 'src/WinXP/index.js');
+    const text = await readFile(shellPath, 'utf8');
+    const begin = text.indexOf('const initState = {');
+    const finish = text.indexOf('function WinXP() {', begin);
+    const owned = await readFile(resolve(ROOT, 'src/core/window/classicReducer.js'), 'utf8');
+    if (begin < 0 || finish < 0 || !owned.includes(text.slice(begin, finish))) throw Error('Classic window contract mismatch');
+    const importLine = "import { createClassicWindowState } from '../core/window/classicReducer.js';\n";
+    const setupLine = 'const { initState, reducer } = createClassicWindowState({ defaultAppState, defaultIconState, FOCUSING, POWER_STATE });\n';
+    await writeFile(shellPath, importLine + text.slice(0, begin) + setupLine + text.slice(finish));
     await writeFile(join(tmp, '.pfx-signature'), fingerprint + '\n');
     // The preview is disposable; after modifying the input config, run npm run setup again.
     await rm(OUT, { recursive: true, force: true });
