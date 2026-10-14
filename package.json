@@ -1,18 +1,28 @@
 {
   "name": "pfx-xp",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=22"
   },
   "scripts": {
-    "setup": "npm ci --prefix upstream/web-xp",
     "prepare:xp": "node tools/prepare.mjs",
-    "dev": "node tools/prepare.mjs && npm run start --prefix .pfx-workspace",
-    "test:unit": "node --test tests/unit/*.test.mjs",
-    "test:xp": "node tools/prepare.mjs && npm run test --prefix .pfx-workspace",
-    "test:smoke": "node tools/prepare.mjs && npm run test:smoke --prefix .pfx-workspace",
-    "build:local": "node tools/prepare.mjs && npm run build --prefix .pfx-workspace"
+    "dev": "npm run prepare:xp && vite --config .pfx-workspace/vite.config.mjs --root .pfx-workspace",
+    "build:local": "npm run prepare:xp && vite build --config .pfx-workspace/vite.config.mjs --root .pfx-workspace",
+    "preview": "vite preview --config .pfx-workspace/vite.config.mjs --root .pfx-workspace",
+    "test:unit": "node --test tests/unit/*.test.mjs"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-use": "^17.6.0",
+    "styled-components": "^5.3.11",
+    "webamp": "^2.3.1",
+    "lodash.samplesize": "^4.2.0"
+  },
+  "devDependencies": {
+    "vite": "^6.2.0",
+    "@vitejs/plugin-react": "^4.3.4"
   }
 }

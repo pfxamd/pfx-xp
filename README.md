@@ -1,47 +1,22 @@
 # PFx XP
 
-Browser-based Windows XP-style desktop, developed from the open-source [webXP](https://github.com/aduncandev/web-xp) project.
+This branch is a **migration candidate**, not the production branch. It is built from the original [ShizukuIchi/winXP](https://github.com/ShizukuIchi/winXP), pinned at `856bb554b3667f62078010b4cee10cc2645761e1`, rather than the large webXP fork.
 
-## Development milestone 1
+The original source is a Git submodule; PFx-owned filesystem and window modules remain in `src/core/`. The workspace assembler keeps the original checkout immutable, adapts the entrypoint for React 18, and uses Vite 6 rather than the original CRA tooling. The shell and six original apps are still upstream code. The custom core is not yet wired into the original shell.
 
-The upstream desktop, renderer and built-in applications are preserved in the Git submodule at `upstream/web-xp` (commit `bc9528db08c3714e6dfd52be43e1dcb3fe4a216a`). PFx XP now owns its virtual filesystem path/index helpers, shell window-event bus, and window state reducer. It also has a separate **disposable development workspace** with an overlay that registers its first independent application, **PFx Tools**, in the original shell and Start menu. The original submodule stays untouched.
-
-This is a working *source integration*, **not yet a standalone fork**. Its build and browser tests still need to run on a machine with Node and network access. Third-party asset rights must be cleared before redistribution.
-
-## Run locally (Node 22+)
+## Local preview on Linux
 
 ```bash
-git clone --recurse-submodules https://github.com/pfxamd/pfx-xp.git
+git clone --recurse-submodules --branch migration/original-winxp https://github.com/pfxamd/pfx-xp.git
 cd pfx-xp
-npm run setup
+npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`. Once signed in, open **PFx Tools** from Start > All Programs, or use Run with `pfx-tools`. Existing local profiles may require the Run command to see the newly added shortcut.
+Visit `http://localhost:3000`. Run `npm run build:local` and `npm run test:unit` locally. No GitHub Actions workflows are configured.
 
-## Checks (local only)
+**Verification status:** Source structure and migration rules reviewed; full runtime build and browser checks not yet verified. Keep `main` unchanged until a successful visual and functional comparison.
 
-```bash
-npm run test:unit
-cd upstream/web-xp && npx playwright install chromium && cd ../..
-npm run test:smoke
-npm run test:xp
-npm run build:local
-```
+## Preserve and adopt
 
-No GitHub Actions workflows are configured. Build output is for **local verification only**; do not redistribute bundled media before a rights review.
-
-## Architecture
-
-- `upstream/web-xp/`: pinned reference source as a submodule (not modified)
-- `src/core/`: first-party virtual filesystem utilities, node index, window event bus and reducer
-- `tools/core-modules.mjs`: explicit mapping of PFx-owned modules into the workspace
-- `tools/prepare.mjs`: assemble an ignored workspace from the pinned source
-- `tools/overlay.mjs`: strict, fail-closed integration patches against known source anchors
-- `overrides/apps/PFxTools/`: first independent program, launched by the real window manager
-- `tests/`: integration and overlay tests
-- `.pfx-workspace/`: generated and ignored; do not edit files here
-
-## Security and attribution
-
-The original code is MIT-licensed; [LICENSE](LICENSE) preserves the upstream copyright. The upstream assets (including Microsoft/Nintendo media, sounds and other third-party materials) are not automatically MIT-licensed. The original local account passwords are simulation-grade, not a security boundary. See [migration audit](docs/UPSTREAM-AUDIT.md).
+The previous state is backed up at [backup/webxp-before-rebase](https://github.com/pfxamd/pfx-xp/tree/backup/webxp-before-rebase). Core modules and unit tests were retained in this migration branch. Integration requires adapting the original window reducer and adding a proper persistent filesystem; these are not yet integrated. Respect [MIT attribution](LICENSE), and review trademarked images and audio before redistribution.
